@@ -36,9 +36,9 @@ object TopKMovieAnalyzer {
     val topNScoreMostMovie = ratings.map(x =>
       (x._2, (x._3.toInt, 1)) //RDD[(movieID,(score,1))]
     ).reduceByKey((v1, v2) =>
-      (v1._1 + v2._1, v1._2 + v2._2)
+      (v1._1 + v2._1, v1._2 + v2._2)//RDD[movieID,(scores,times)]
     ).map(x =>
-      (x._2._1.toFloat / x._2._2.toFloat, x._1) //RDD[avgScore,movidID]
+      (x._2._1.toFloat / x._2._2.toFloat, x._1) //RDD[scores/times,movidID]
     ).sortByKey(false).
       take(10).
       foreach(println)
