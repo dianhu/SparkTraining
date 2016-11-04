@@ -10,7 +10,14 @@ import org.training.spark.util.{KafkaRedisProperties, RedisClient}
 /**
   * Time : 16-11-3 下午5:27
   * Author : hcy
-  * Description : 
+  * Description : spark streaming从kafka取数据，经过处理写入redis
+  * 从redis客户端查看：
+  * /usr/local/bin/ ./redis-cli
+  * keys *
+  * type app::users::click
+  * hlen app::users::click
+  * hvals app::users::click
+  * hmget app::users::click 97edfc08311c70143401745a03a50706 6b67c8c700427dee7552f81f3228c927
   */
 object UserClickCountAnalytics {
   def main(args: Array[String]): Unit = {

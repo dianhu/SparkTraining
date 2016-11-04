@@ -9,7 +9,11 @@ import scala.util.Random
 /**
   * Time : 16-11-3 下午5:27
   * Author : hcy
-  * Description : 
+  * Description : 往kafka写数据
+  * 先启动zk:
+  * /opt/zookeeper-3.4.6/bin ./zkService.sh start
+  * 再启动kafka:
+  * /opt/kafka_2.10-0.8.2.1/bin$ ./kafka-server-start.sh ../config/server.properties
   */
 object KafkaEventProducer {
 
