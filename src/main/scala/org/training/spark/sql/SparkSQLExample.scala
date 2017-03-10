@@ -90,6 +90,10 @@ object SparkSQLExample {
     // |  30|   Andy|
     // |  19| Justin|
     // +----+-------+
+    sqlDF.map(attr=>"Name:"+attr(1)).take(10).foreach(println)
+    // |Name: Michael|
+    // |   Name: Andy|
+    // | Name: Justin|
 
   }
 
