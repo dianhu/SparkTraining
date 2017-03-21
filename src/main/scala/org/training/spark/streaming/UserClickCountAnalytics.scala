@@ -21,14 +21,15 @@ import org.training.spark.util.{KafkaRedisProperties, RedisClient}
   */
 object UserClickCountAnalytics {
   def main(args: Array[String]): Unit = {
-    var masterUrl = "local[1]"
+    var masterUrl = "local[4]"
     if (args.length > 0) {
       masterUrl = args(0)
     }
 
     // Create a StreamingContext with the given master URL
     val conf = new SparkConf().setMaster(masterUrl).setAppName("UserClickCountStat")
-    val ssc = new StreamingContext(conf, Seconds(5))
+    val ssc = new StreamingContext(conf, Seconds(4))
+    ssc.checkpoint("checkpoint")
 
     // Kafka configurations
     val topics = KafkaRedisProperties.KAFKA_USER_TOPIC.split("\\,").toSet
@@ -53,15 +54,17 @@ object UserClickCountAnalytics {
     })
 
     // Compute user click times
-    val userClicks = events.map(x => (x.getString("uid"), x.getLong("click_count"))).reduceByKey(_ + _)
+    //val userClicks = events.map(x => (x.getString("uid"), x.getLong("click_count"))).reduceByKey(_ + _)
+
+    val userClicks = events.map(x => (x.getString("uid"), x.getLong("click_count"))).window(Seconds(60),Seconds(20))reduceByKeyAndWindow(_+_,_-_,Seconds(60),Seconds(20),2)
     userClicks.foreachRDD(rdd => {
       rdd.foreachPartition(partitionOfRecords => {
-        val jedis = RedisClient.pool.getResource
+        //val jedis = RedisClient.pool.getResource
         partitionOfRecords.foreach(pair => {
           try {
             val uid = pair._1
             val clickCount = pair._2
-            jedis.hincrBy(clickHashKey, uid, clickCount)
+            //jedis.hincrBy(clickHashKey, uid, clickCount)
             println(s"Update uid ${uid} to ${clickCount}.")
           } catch {
             case e: Exception => println("error:" + e)
